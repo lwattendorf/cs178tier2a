@@ -3,20 +3,10 @@
 
     const dispatch = createEventDispatcher();
     
-    /*
-	    #EVENTHANDLER
-	    specifies how to "handle" when the user tries to remove
-        and item from the to do list. Uses svelte's event dispatcher.
-    */ 
     function remove() {
         dispatch('remove', { id })
     }
 
-    /*
-	    #EVENTHANDLER
-	    specifies how to "handle" when the user toggles the list item
-        complete or incomplete. Uses svelte's event dispatcher.
-    */ 
     function toggleStatus() {
         let newStatus = !complete;
         dispatch('toggle', {
@@ -27,12 +17,6 @@
 
     export let id; // document ID
     export let text;
-
-    /*
-	    #REACTIVE
-	    complete utalizes the reactive concept by keeping the DOM in sync when the user
-        toggles a list item complete / incomplete
-    */ 
     export let complete;
 
 </script>
@@ -71,11 +55,6 @@
 </style>
 
 <div class="row" on:click={toggleStatus} on:keyup={console.log('keyup')}>
-    <!-- 
-    #CONTROLFLOW
-    Below I use an if else block to conditionally render
-    the Done button if item has not been completed
-    -->
     <input class="checkbox" type="checkbox" checked={complete} on:click={toggleStatus}>
 {#if complete}
     <span class="is-complete">{ text }</span>
