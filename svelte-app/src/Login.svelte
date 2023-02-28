@@ -1,5 +1,6 @@
 <script>
     import { auth } from './firebase'
+    import { Button, Grid, Row, Column, TextInput } from "carbon-components-svelte";
 
     async function signInAnonymously() {
         console.log("Signing in...");
@@ -21,13 +22,43 @@
 	}
 </script>
 
-
-<h1>Login</h1>
-<input id="displayName" type="name" name="name"/>
-<input id="password" type="password" name="password" />
-
-<button on:click={signInAnonymously}>Sign in</button>
-
-<style>
-
-</style>
+<Grid>
+    <Row padding style="padding-top: 25%" >
+        <Column/>
+        <Column><h1>Welcome</h1></Column>
+        <Column/>
+    </Row>
+    <Row padding>
+        <Column/>
+        <Column><h4>Sign In</h4></Column>
+        <Column/>
+    </Row>
+    <Row>
+        <Column/>
+        <Column>
+            <TextInput 
+                id="displayName"
+                placeholder="Your Name" 
+            />
+        </Column>
+        <Column/>
+    </Row>
+    <Row>
+        <Column/>
+        <Column>
+            <TextInput 
+                placeholder="Password" 
+                id="password" 
+                type="password" 
+                name="password" />
+        </Column>
+        <Column/>
+    </Row>
+    <Row padding>
+        <Column/>
+        <Column>
+            <Button style="width: 100%" on:click={signInAnonymously}>Sign in</Button>
+        </Column>
+        <Column/>
+    </Row>
+</Grid>
