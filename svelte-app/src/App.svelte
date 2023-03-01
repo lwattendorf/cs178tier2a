@@ -1,8 +1,8 @@
 <script>
 	import { auth } from './firebase';
     import { authState } from 'rxfire/auth';
-	import { Button } from "carbon-components-svelte";
 
+	import Main from "./Main.svelte";
 	import Login from './Login.svelte';
 	import "carbon-components-svelte/css/g100.css";
 
@@ -13,7 +13,7 @@
 
 <section>
 {#if $user}
-	<Button on:click={ () => auth.signOut() }>Logout</Button>
+	<Main/>
 {:else}
 	<Login/>
 {/if}

@@ -2,13 +2,13 @@
     import { auth } from './firebase'
     import { Button, Grid, Row, Column, TextInput } from "carbon-components-svelte";
 
+    let displayName = "";
+
     async function signInAnonymously() {
         console.log("Signing in...");
         try {
             const userCredential = await auth.signInAnonymously();
             const user = userCredential.user;
-
-            const displayName = document.getElementById('displayName').value;
 
             // Update the user's profile with the provided name
             await user.updateProfile({
@@ -37,6 +37,7 @@
         <Column/>
         <Column>
             <TextInput 
+                bind:value={displayName}
                 id="displayName"
                 placeholder="Your Name" 
             />
