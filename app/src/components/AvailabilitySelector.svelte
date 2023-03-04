@@ -1,20 +1,31 @@
 
 <script>
-    import { ContentSwitcher, Switch, Grid, Row, Column, ComboBox } from "carbon-components-svelte";
-    import { FaceSatisfiedFilled, FaceNeutral, EarthEuropeAfrica, Building, Video } from "carbon-icons-svelte/lib/";
+    import { ContentSwitcher, Switch } from "carbon-components-svelte";
+    import { FaceSatisfied, FaceDissatisfied } from "carbon-icons-svelte/lib/";
   
     let selectedIndex = 0;
 </script>
 
 <ContentSwitcher bind:selectedIndex>
-    <Switch>
+    <Switch class="available">
         <div style="display: flex; align-items: center;">
-            <FaceSatisfiedFilled style="margin-right: 0.5rem;" />Available
+            <FaceSatisfied style="margin-right: 0.5rem;" />Available
         </div>
     </Switch>
-    <Switch>
+    <Switch class="ifnecessary">
         <div style="display: flex; align-items: center;">
-            <FaceNeutral style="margin-right: 0.5rem;" />If necessary
+            <FaceDissatisfied style="margin-right: 0.5rem;" />If necessary
         </div>
     </Switch>
 </ContentSwitcher>
+
+<style>
+    :global(.bx--content-switcher-btn.available)::after,
+    :global(.bx--content-switcher-btn.available.bx--content-switcher--selected) {
+        background-color: green !important
+    }
+    :global(.bx--content-switcher-btn.ifnecessary)::after,
+    :global(.bx--content-switcher-btn.ifnecessary.bx--content-switcher--selected) {
+        background-color: yellowgreen !important
+    }
+</style>
