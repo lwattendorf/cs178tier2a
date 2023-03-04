@@ -10,9 +10,6 @@
 <Grid>
     <Row>
         <Column>
-            <ClearSchedule></ClearSchedule>
-        </Column>
-        <Column>
             <AvailabilitySelector updateAvailability={updateAvailability}></AvailabilitySelector>
         </Column>
         <Column>

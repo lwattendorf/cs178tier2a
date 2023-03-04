@@ -6,6 +6,7 @@
 	import { get_current_component } from 'svelte/internal';
     import { selectionState } from './types.ts';
     import { Button, Modal } from "carbon-components-svelte";
+    import { Redo } from "carbon-icons-svelte/lib/";
 
 
     let idCount = 0;
@@ -43,6 +44,10 @@
         selectBackgroundColor: "green"
     };
 
+    selectionState.subscribe(value => {
+        options.selectBackgroundColor = value.available ? 'green' : 'yellowgreen';
+    })
+
     function clear() {
         options.events = [];
     }
@@ -56,7 +61,6 @@
     }
 
     const handleSelection = (time) => {
-        options.selectBackgroundColor = myState.available ? 'yellowgreen' : 'green';
         ec.addEvent({
             id: idCount,
             title: myState.location == 0 ? 'Anywhere': myState.location == 1 ? 'Zoom Only': 'SEC',
@@ -70,31 +74,19 @@
         console.log("Event Added")
     }
     const handleEventClick = (info) => {
-        options.selectBackgroundColor = myState.available ? 'green' : 'yellowgreen';
         console.log("event click!")
         open = true;
         cur_event = info.event.id;
     }
 
-    function handleClose() {
-        open = false;
-        cur_event = -1;
-    }
-    
-    import {
-      ContextMenu,
-      ContextMenuDivider,
-      ContextMenuRadioGroup,
-      ContextMenuOption,
-    } from "carbon-components-svelte";
-  
-    let target;
-    let selectedAvail = "0";
-    let selectedLoc = "0";
 
 </script>
 
-<button on:click={clear}>Clear</button>
+<Button on:click={clear} kind="secondary" size="small">
+    <div style="display: flex; align-items: center;">
+        <Redo style="margin-right: 0.0rem;" />Clear
+    </div>
+</Button>
 <Calendar bind:this={ec} {plugins} {options} />
   
 <Modal
