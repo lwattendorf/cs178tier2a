@@ -1,12 +1,13 @@
-
 <script>
     import { ContentSwitcher, Switch } from "carbon-components-svelte";
     import { FaceSatisfied, FaceDissatisfied } from "carbon-icons-svelte/lib/";
+    import { updateAvailability } from "./types.ts";
   
     let selectedIndex = 0;
+
 </script>
 
-<ContentSwitcher bind:selectedIndex>
+<ContentSwitcher bind:selectedIndex on:click={updateAvailability}>
     <Switch class="available">
         <div style="display: flex; align-items: center;">
             <FaceSatisfied style="margin-right: 0.5rem;" />Available

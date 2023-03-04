@@ -1,11 +1,12 @@
 <script>
     import { ContentSwitcher, Switch, Grid, Row, Column, ComboBox } from "carbon-components-svelte";
     import { FaceSatisfiedFilled, FaceNeutral, EarthEuropeAfrica, Building, Video } from "carbon-icons-svelte/lib/";
+    import { updateLocation } from "./types.ts";
   
     let selectedIndex = 0;
 </script>
 
-<ContentSwitcher bind:selectedIndex>
+<ContentSwitcher bind:selectedIndex on:click={() => updateLocation(selectedIndex)}>
     <Switch class="any">
         <div style="display: flex; align-items: center;">
             <EarthEuropeAfrica style="margin-right: 0.5rem;" />Any location
@@ -22,18 +23,3 @@
         </div>
     </Switch>
 </ContentSwitcher>
-
-<style>
-    :global(.bx--content-switcher-btn.any)::after,
-    :global(.bx--content-switcher-btn.bx--content-switcher--selected.any) {
-        background-color: darkslateblue !important
-    }
-    :global(.bx--content-switcher-btn.zoom)::after,
-    :global(.bx--content-switcher-btn.bx--content-switcher--selected.zoom){
-        background-color: purple !important
-    }
-    :global(.bx--content-switcher-btn.sec)::after, 
-    :global(.bx--content-switcher-btn.bx--content-switcher--selected.sec) {
-        background-color: blueviolet !important
-    }
-</style>
