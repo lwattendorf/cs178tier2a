@@ -24,12 +24,11 @@
     }
 </script>
 
-{#if displayName!=null}
 <Grid>
     <Row padding>
         <Column>
             <div class="container">
-                <h4>Welcome, {displayName}</h4>
+                {#if displayName!=null}<h4>Welcome, {displayName}</h4>{/if}
                 <div class="buttonContainer">
                 <Button size="small" kind="tertiary" on:click={logout}>Logout</Button>        
                 </div>
@@ -37,9 +36,6 @@
         </Column>
    </Row>
 </Grid>
-{:else}
-<Loading></Loading>
-{/if}
 
 <style>
     .container {
