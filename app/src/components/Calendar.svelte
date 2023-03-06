@@ -19,19 +19,41 @@
     let open = false;
     let cur_event;
     let hasAdminAccess = false;
+    let displayName;
     $: myState = $selectionState;
     $: timeZone = $timeZoneState;
 
+    let startTime = 0;
+
+    function startTimer() {
+        startTime = Date.now();
+    }
+
+    function stopTimer() {
+        let totalTime = (Date.now() - startTime) / 1000;
+        console.log("Finished in " + totalTime + " sec");
+
+        // save totalTime to firestore
+        if (!hasAdminAccess) {
+            let timerCollectionRef = db.collection('timer');
+            timerCollectionRef.add({
+                user: displayName,
+                time: totalTime
+            })
+            .catch((error) => {
+                console.error("Error adding document to timer db: ", error);
+            });
+        }
+    }
+
     onMount(() => {
-        onAuthStateChanged(
-            auth,
-            (user) => {
-                hasAdminAccess = user.displayName == 'laurenwattendorfadmin' || user.displayName == 'tygeriadmin';
-            },
-            (error) => {
-                console.log(error);
-            }
-        );
+        onAuthStateChanged( auth, (user) => {
+            displayName = user.displayName;
+            hasAdminAccess = user.displayName == 'laurenwattendorfadmin' || user.displayName == 'tygeriadmin';
+        }, (error) => {
+            console.log(error);
+        });
+        startTimer();
     });
 
     let ec;
@@ -126,6 +148,7 @@
     async function handleSaveAndView() {
         handleSaveEvents();
         updateTimeZone('-05:00'); // always display final times in EST
+        stopTimer();
         await goto('/results');
     }
 
@@ -150,7 +173,12 @@
         options.events = [];
         db.collection("events").get().then(res => {
             res.forEach(element => {
-            element.ref.delete();
+                element.ref.delete();
+            });
+        });
+        db.collection("timer").get().then(res => {
+            res.forEach(element => {
+                element.ref.delete();
             });
         });
     }

@@ -11,15 +11,18 @@
             covertShortStrToText, 
             availableColor, 
             ifnecessaryColor } from './types.ts';
-    import { Button, Grid, Row, Column } from "carbon-components-svelte";
+    import { Button, Row, Column } from "carbon-components-svelte";
     import { goto } from "$app/navigation";
     import { auth } from '../firebase.js';
+    import { onMount } from 'svelte';
 
     $: meetingLength = $meetingIntervalState;
     $: timeZone = $timeZoneState;
     $: topTimes = $topTimesState;
     $: numEvents = topTimes == 0 ? 3 : topTimes == 1 ? 5 : 10;
     let colorScale = [];
+
+    let objUrl;
 
     let ec;
     let plugins = [TimeGrid];
@@ -45,6 +48,10 @@
         allDaySlot: false,
         selectBackgroundColor: availableColor
     };
+
+    onMount(() => {
+        exportInputTimer();
+    });
 
     meetingIntervalState.subscribe(() => {
         options.events = [];
@@ -153,6 +160,26 @@
     function rankToString(i) {
         return i == 1 ? '1st' : i == 2 ? '2nd' : i == 3 ? '3rd' : i + "th";
     }
+
+    async function exportInputTimer() {
+        const querySnapshot = await getDocs(collection(db, "timer"));
+        let timerArray = [];
+        querySnapshot.forEach((doc, i)=> {
+            timerArray.push({ "user": doc.data().user, "time (sec)": doc.data().time})   
+        });
+        const titleKeys = Object.keys(timerArray[0])
+        const cleanedData = []
+        cleanedData.push(titleKeys)
+        timerArray.forEach(item => {
+            cleanedData.push(Object.values(item))  
+        })
+        let csvContent = '';
+        cleanedData.forEach(row => {
+            csvContent += row.join(',') + '\n'
+        })
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8,' })
+        objUrl = URL.createObjectURL(blob)
+    }
     
 </script>
 
@@ -177,6 +204,9 @@
     <Column/>
     <Column>
         <div class="container">
+            <div class="buttonContainer">
+                <Button size="field" kind="tertiary" href={objUrl}>Export Input Timing Data</Button>            
+            </div>
             <div class="buttonContainer">
             <Button kind="danger" size="field" on:click={logout}>Done</Button>              
             </div>
