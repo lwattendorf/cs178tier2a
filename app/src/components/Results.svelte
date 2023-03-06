@@ -36,7 +36,7 @@
             // events added here using handleDateTimeClick()
         ],
         selectable: false,
-        height: '730px',
+        height: '500px',
         headerToolbar: {start: '', center: '', end: ''},
         buttonText: {today: 'day', dayGridMonth: 'month', 
                      listDay: 'list', listWeek: 'list', listMonth: 'list', 

@@ -70,7 +70,7 @@
             // events added here using handleDateTimeClick()
         ],
         selectable: true,
-        height: '730px',
+        height: '500px',
         headerToolbar: {start: '', center: '', end: ''},
         buttonText: {today: 'day', dayGridMonth: 'month', 
                      listDay: 'list', listWeek: 'list', listMonth: 'list', 
@@ -140,6 +140,15 @@
                 } 
             }) 
         }
+    }
+
+    async function handleSaveAndExit() {
+        handleSaveEvents();
+        updateTimeZone('-05:00'); // always display final times in EST
+        stopTimer();
+        setAvailability(true); // reset availability store to true
+        auth.signOut();
+        await goto('/');
     }
 
     function convertTimeToIndex(time) {
@@ -218,10 +227,10 @@
         <button hidden={!hasAdminAccess} on:click={clearAllEvents}>Clear database</button>        
     </div>                
     <div class="buttonContainer">
-    <Button size="field" kind="tertiary" on:click={handleSaveEvents}>Save</Button>        
+    <Button size="field" kind="tertiary" on:click={handleSaveAndView}>Save and View Results</Button>        
     </div>
     <div class="buttonContainer">
-        <Button size="field" on:click={handleSaveAndView}>Save and View Results</Button>        
+        <Button size="field" on:click={handleSaveAndExit}>Save and Exit</Button>        
     </div>
 </div>      
 
