@@ -4,7 +4,7 @@
     import { onMount } from 'svelte';
     import { goto } from "$app/navigation";
     import { auth } from '../firebase.js';
-    export let displayName = null;
+    let displayName = null;
 
     onMount(() => {
         onAuthStateChanged(
@@ -27,12 +27,17 @@
 <Grid>
     <Row padding>
         <Column>
-            <div class="container">
-                {#if displayName!=null}<h4>Welcome, {displayName}</h4>{/if}
-                <div class="buttonContainer">
-                <Button size="field" kind="tertiary" on:click={logout}>Logout</Button>        
+            <div class="header-container">
+                <div class="left-container">
+                    <h4 style="align-self: end">Please enter your availability:</h4>
                 </div>
-            </div>       
+                <div class="container">
+                    {#if displayName!=null}<h4>Welcome, {displayName}</h4>{/if}
+                    <div class="buttonContainer">
+                    <Button size="field" kind="tertiary" on:click={logout}>Logout</Button>        
+                    </div>
+                </div>
+            </div>
         </Column>
    </Row>
 </Grid>

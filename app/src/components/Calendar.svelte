@@ -14,10 +14,13 @@
     import { onMount } from 'svelte';
     import { auth } from '../firebase.js';
     import { availableColor, ifnecessaryColor } from './types';
+    import { timeZoneState, covertShortStrToText } from "./types.ts";
 
     let open = false;
     let cur_event;
     let hasAdminAccess = false;
+    $: myState = $selectionState;
+    $: timeZone = $timeZoneState;
 
     onMount(() => {
         onAuthStateChanged(
@@ -30,8 +33,6 @@
             }
         );
     });
-
-    $: myState = $selectionState;
 
     let ec;
     let plugins = [TimeGrid, Interaction];
@@ -154,10 +155,12 @@
 </script>
 
 <div class="header-container">
-    <Button on:click={handleClear} style="padding-right: 16px; margin-right: 16px;" kind="secondary" size="field">
-        <Redo style="margin-right: 0.5rem;"/> Clear
-    </Button>
-    <h4>Please enter your availability:</h4>
+    <div class="left-container">
+        <Button on:click={handleClear} style="padding-right: 16px; margin-right: 16px;" kind="secondary" size="field">
+            <Redo style="margin-right: 0.5rem;"/> Clear
+        </Button>
+    </div>
+    <h6>{covertShortStrToText(timeZone)}</h6>
 </div>
 <Calendar bind:this={ec} {plugins} {options} />
   
@@ -187,9 +190,12 @@
 </div>      
 
 <style>
-    .header-container {
+    :global(.header-container) {
         display: flex;
-        justify-content: start;
+        justify-content: space-between;
+    }
+    :global(.left-container) {
+        display: flex;
     }
     .footer-container {
         display: flex;
@@ -198,5 +204,9 @@
     }
     .buttonContainer {
         padding-left: 16px;
+    }
+    :global(h6) {
+        justify-self: end;
+        align-self: end;
     }
 </style>

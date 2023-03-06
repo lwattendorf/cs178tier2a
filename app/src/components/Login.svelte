@@ -2,26 +2,28 @@
     import { auth } from '../firebase.js';
     import { Button, Grid, Row, Column, TextInput, Select, SelectItem } from "carbon-components-svelte";
     import { goto } from "$app/navigation";
+    import { updateTimeZone } from './types.ts';
 
     let displayName;
-    let selectedTimeZone;
+    let selectedTimeZone = "-05:00";
     let invalidDisplayName = false;
 
     async function signInAnonymously() {
+
         if (displayName === "") {
             invalidDisplayName = true;
         }
         else {
             console.log("Signing in...");
             try {
+                updateTimeZone(selectedTimeZone);
+
                 const userCredential = await auth.signInAnonymously();
                 const user = userCredential.user;
-
 
                 // Update the user's profile with the provided name
                 await user.updateProfile({
                     displayName: displayName,
-                    timeZone: selectedTimeZone,
                 });
 
                 await goto('/main');
@@ -55,7 +57,7 @@
     </Row>
     <Row>
         <Column sm={{ span: 2, offset: 1 }}>
-        <Select name="timezone_offset" selected="-05:00" bind:selectedTimeZone>
+        <Select name="timezone_offset" bind:selected={selectedTimeZone}>
             <SelectItem value="-12:00" text="(GMT -12:00) Eniwetok, Kwajalein" />
             <SelectItem value="-11:00" text="(GMT -11:00) Midway Island, Samoa" />
             <SelectItem value="-10:00" text="(GMT -10:00) Hawaii" />
