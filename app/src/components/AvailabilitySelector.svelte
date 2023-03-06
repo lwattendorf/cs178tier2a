@@ -26,6 +26,6 @@
     }
     :global(.bx--content-switcher-btn.ifnecessary)::after,
     :global(.bx--content-switcher-btn.ifnecessary.bx--content-switcher--selected) {
-        background-color: #F1A208 !important
+        background-color: #619d4b !important
     }
 </style>

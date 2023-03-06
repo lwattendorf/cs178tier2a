@@ -10,7 +10,7 @@
             timeZoneState, 
             covertShortStrToText, 
             availableColor, 
-            ifnecessaryColor } from './types.ts';
+            lastRankColor } from './types.ts';
     import { Button, Row, Column } from "carbon-components-svelte";
     import { goto } from "$app/navigation";
     import { auth } from '../firebase.js';
@@ -21,9 +21,7 @@
     $: topTimes = $topTimesState;
     $: numEvents = topTimes == 0 ? 3 : topTimes == 1 ? 5 : 10;
     let colorScale = [];
-
     let objUrl;
-
     let ec;
     let plugins = [TimeGrid];
     let options = {
@@ -50,7 +48,7 @@
     };
 
     onMount(() => {
-        exportInputTimer();
+        createExportCSVUrl();
     });
 
     meetingIntervalState.subscribe(() => {
@@ -75,13 +73,14 @@
                     end: docData.endTime,
                     zoom: docData.locaiton == 1,
                     available: docData.available ? 1 : 0.5,
-            })   
+                })   
             }
         });
+        console.log(events);
 
         let newEvents = findOverlaps(events);
 
-        colorScale = chroma.scale([availableColor,ifnecessaryColor]).mode('lch').colors(numEvents);
+        colorScale = chroma.scale([availableColor,lastRankColor]).mode('lch').colors(numEvents);
 
         newEvents.forEach(event => {
             ec.removeEventById(event.startTime);
@@ -161,7 +160,7 @@
         return i == 1 ? '1st' : i == 2 ? '2nd' : i == 3 ? '3rd' : i + "th";
     }
 
-    async function exportInputTimer() {
+    async function createExportCSVUrl() {
         const querySnapshot = await getDocs(collection(db, "timer"));
         let timerArray = [];
         querySnapshot.forEach((doc, i)=> {

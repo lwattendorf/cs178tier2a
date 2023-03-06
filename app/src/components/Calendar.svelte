@@ -117,21 +117,24 @@
             let events = options.events[0].getEvents();
             events.forEach((event) => {
                 let tzDiff = (covertShortToDiff(timeZone) + 5) * 60; // calculates the diff to EST
-                let docRef = db.collection("events").doc(event.id);
+                let collectionRef = db.collection("events");
+                let docRef = collectionRef.doc(event.id);
                 let startTime = convertTimeToIndex(event.start) + tzDiff;
                 let endTime = convertTimeToIndex(event.end) + tzDiff;
-                if (startTime >= 0 && endTime <= 672) { // must be within the week in EST
+                if (startTime >= 0 && endTime <= 10080) { // must be within the week in EST
                     let obj = {
                         available: event.backgroundColor == availableColor, 
                         location: event.title == 'Anywhere' ? 0 : event.title == 'Zoom Only' ? 1 : 2, 
                         startTime: startTime, 
                         endTime: endTime,
                     }
+                    console.log(obj);
+                    
                     docRef.get().then((docSnapshot) => {
                         if (docSnapshot.exists) {
                             docRef.update(obj)
                         } else {
-                            docRef.set(obj)
+                            collectionRef.add({...obj, id: event.id})
                         }
                     })
                 } 

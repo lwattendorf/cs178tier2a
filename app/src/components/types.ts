@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store';
 export let availableColor = '#298073';
-export let ifnecessaryColor = '#F1A208';
+export let ifnecessaryColor = '#619d4b';
+export let lastRankColor = '#F1A208';
 
 interface SelectionState {
     available: boolean;
