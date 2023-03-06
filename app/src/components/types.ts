@@ -14,6 +14,10 @@ export function updateAvailability() {
     selectionState.update(n => ({available: !n.available, location: n.location}));
 }
 
+export function setAvailability(available: boolean) {
+    selectionState.update(n => ({available: available, location: n.location}));
+}
+
 export function updateLocation(loc: number) {
     selectionState.update(n => ({available: n.available, location: loc}));
 }

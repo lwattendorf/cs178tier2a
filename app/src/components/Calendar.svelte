@@ -3,7 +3,7 @@
     import TimeGrid from '@event-calendar/time-grid';
     import Interaction from '@event-calendar/interaction'
     import '@event-calendar/core/index.css';
-    import { selectionState } from './types.ts';
+    import { selectionState, setAvailability } from './types.ts';
     import { Button, Modal } from "carbon-components-svelte";
     import { Redo } from "carbon-icons-svelte/lib/";
     import { db } from '../firebase.js'
@@ -152,6 +152,7 @@
         handleSaveEvents();
         updateTimeZone('-05:00'); // always display final times in EST
         stopTimer();
+        setAvailability(true); // reset availability store to true
         await goto('/results');
     }
 

@@ -204,7 +204,7 @@
     <Column>
         <div class="container">
             <div class="buttonContainer">
-                <Button size="field" kind="tertiary" href={objUrl}>Export Input Timing Data</Button>            
+                <Button size="field" kind="tertiary" href={objUrl}>Export Timing Data</Button>            
             </div>
             <div class="buttonContainer">
             <Button kind="danger" size="field" on:click={logout}>Done</Button>              

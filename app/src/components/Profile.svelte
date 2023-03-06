@@ -4,6 +4,7 @@
     import { onMount } from 'svelte';
     import { goto } from "$app/navigation";
     import { auth } from '../firebase.js';
+    import { setAvailability } from './types.ts';
     let displayName = null;
 
     onMount(() => {
@@ -19,6 +20,7 @@
     });
 
     async function logout() {
+        setAvailability(true); // reset availability store to true
         auth.signOut();
         await goto('/');
     }
