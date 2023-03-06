@@ -141,8 +141,8 @@
         }
     }
 
-    function TEMP_clearAllEvents() {
-        console.log("DATABASE CLEARED!")
+    function clearAllEvents() {
+        console.log("FIRESTORE DATABASE CLEARED!")
         options.events = [];
         db.collection("events").get().then(res => {
             res.forEach(element => {
@@ -176,7 +176,7 @@
 
 <div class="footer-container">
     <div class="buttonContainer">
-        <button hidden={!hasAdminAccess} on:click={TEMP_clearAllEvents}>Clear database</button>        
+        <button hidden={!hasAdminAccess} on:click={clearAllEvents}>Clear database</button>        
     </div>                
     <div class="buttonContainer">
     <Button size="field" kind="tertiary" on:click={handleSaveEvents}>Save</Button>        
