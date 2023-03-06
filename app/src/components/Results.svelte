@@ -119,7 +119,7 @@
                     timeArray[startTimeIndex] += event.available;
                     zoomArray[startTimeIndex] = zoomArray[startTimeIndex] || event.zoom === true;
                 }
-                startTimeIndex += 1;
+                startTimeIndex += meetingLength == 0 ? 4 : meetingLength == 1 ? 2 : 1;
             }
         })
 

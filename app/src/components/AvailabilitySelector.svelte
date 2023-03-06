@@ -6,7 +6,7 @@
 
 </script>
 
-<ContentSwitcher size="xl" bind:selectedIndex on:click={updateAvailability}>
+<ContentSwitcher size="lg" bind:selectedIndex on:click={updateAvailability}>
     <Switch class="available">
         <div style="display: flex; align-items: center;">
             <FaceSatisfied style="margin-right: 0.5rem;" />Available

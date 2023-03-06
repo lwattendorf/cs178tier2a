@@ -37,7 +37,7 @@
 </script>
 
 <Grid>
-    <Row padding style="padding-top: 20%" >
+    <Row padding style="padding-top: 15%" >
         <Column sm={{ span: 2, offset: 1 }}><h1>schedUlater</h1></Column>
     </Row>
     <Row padding>

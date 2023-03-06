@@ -6,7 +6,7 @@
     let selectedIndex = 0;
 </script>
 
-<ContentSwitcher size="xl" bind:selectedIndex on:click={() => updateLocation(selectedIndex)}>
+<ContentSwitcher size="lg" bind:selectedIndex on:click={() => updateLocation(selectedIndex)}>
     <Switch class="any">
         <div style="display: flex; align-items: center;">
             <EarthEuropeAfrica style="margin-right: 0.5rem;" />Any location

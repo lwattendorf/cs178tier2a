@@ -78,7 +78,8 @@
                      resourceTimeGridWeek: 'week', timeGridDay: 'day', 
                      timeGridWeek: 'week'},
         allDaySlot: false,
-        selectBackgroundColor: availableColor
+        selectBackgroundColor: availableColor,
+        dayHeaderFormat: {weekday: 'long'}
     };
 
     selectionState.subscribe(value => {
@@ -128,9 +129,8 @@
                         startTime: startTime, 
                         endTime: endTime,
                     }
-                    console.log(obj);
-                    
                     docRef.get().then((docSnapshot) => {
+                        console.log('events');
                         if (docSnapshot.exists) {
                             docRef.update(obj)
                         } else {
@@ -147,7 +147,7 @@
         updateTimeZone('-05:00'); // always display final times in EST
         stopTimer();
         setAvailability(true); // reset availability store to true
-        auth.signOut();
+        await auth.signOut();
         await goto('/');
     }
 

@@ -5,7 +5,7 @@
     let selectedIndex = 0;
 </script>
 
-<ContentSwitcher size="xl" bind:selectedIndex on:click={() => updateMeetingInterval(selectedIndex)}>
+<ContentSwitcher size="lg" bind:selectedIndex on:click={() => updateMeetingInterval(selectedIndex)}>
     <Switch text="1 Hour Meeting"/>
     <Switch text="30 Minute Meeting" />
     <Switch text="15 Minute Meeting" />
