@@ -14,7 +14,7 @@
     import { onMount } from 'svelte';
     import { auth } from '../firebase.js';
     import { availableColor, ifnecessaryColor } from './types';
-    import { timeZoneState, covertShortStrToText } from "./types.ts";
+    import { timeZoneState, updateTimeZone, covertShortStrToText, covertShortToDiff } from "./types.ts";
 
     let open = false;
     let cur_event;
@@ -94,23 +94,25 @@
         if (options.events != [] && options.events[0] != undefined) { 
             let events = options.events[0].getEvents();
             events.forEach((event) => {
+                let tzDiff = (covertShortToDiff(timeZone) + 5) * 60; // calculates the diff to EST
                 let docRef = db.collection("events").doc(event.id);
-                let startTime = convertTimeToIndex(event.start);
-                let endTime = convertTimeToIndex(event.end);
-                let obj = {
-                    available: event.backgroundColor == availableColor, 
-                    location: event.title == 'Anywhere' ? 0 : event.title == 'Zoom Only' ? 1 : 2, 
-                    startTime: startTime, 
-                    endTime: endTime,
-                }
-                docRef.get()
-                    .then((docSnapshot) => {
-                    if (docSnapshot.exists) {
-                        docRef.update(obj)
-                    } else {
-                        docRef.set(obj)
+                let startTime = convertTimeToIndex(event.start) + tzDiff;
+                let endTime = convertTimeToIndex(event.end) + tzDiff;
+                if (startTime >= 0 && endTime <= 672) { // must be within the week in EST
+                    let obj = {
+                        available: event.backgroundColor == availableColor, 
+                        location: event.title == 'Anywhere' ? 0 : event.title == 'Zoom Only' ? 1 : 2, 
+                        startTime: startTime, 
+                        endTime: endTime,
                     }
-                })
+                    docRef.get().then((docSnapshot) => {
+                        if (docSnapshot.exists) {
+                            docRef.update(obj)
+                        } else {
+                            docRef.set(obj)
+                        }
+                    })
+                } 
             }) 
         }
     }
@@ -123,6 +125,7 @@
 
     async function handleSaveAndView() {
         handleSaveEvents();
+        updateTimeZone('-05:00'); // always display final times in EST
         await goto('/results');
     }
 
@@ -162,6 +165,7 @@
     </div>
     <h6>{covertShortStrToText(timeZone)}</h6>
 </div>
+
 <Calendar bind:this={ec} {plugins} {options} />
   
 <Modal

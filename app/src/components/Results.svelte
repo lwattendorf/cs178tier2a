@@ -4,15 +4,19 @@
     import '@event-calendar/core/index.css';
     import { db } from '../firebase.js';
     import { collection, getDocs } from "firebase/firestore";
-    import { nanoid } from 'nanoid';
     import chroma from "chroma-js"
-    import { meetingIntervalState, topTimesState } from './types.ts';
+    import { meetingIntervalState, 
+            topTimesState, 
+            timeZoneState, 
+            covertShortStrToText, 
+            availableColor, 
+            ifnecessaryColor } from './types.ts';
     import { Button, Grid, Row, Column } from "carbon-components-svelte";
     import { goto } from "$app/navigation";
     import { auth } from '../firebase.js';
-    import { availableColor, ifnecessaryColor } from './types.ts';
 
     $: meetingLength = $meetingIntervalState;
+    $: timeZone = $timeZoneState;
     $: topTimes = $topTimesState;
     $: numEvents = topTimes == 0 ? 3 : topTimes == 1 ? 5 : 10;
     let colorScale = [];
@@ -31,7 +35,7 @@
             // events added here using handleDateTimeClick()
         ],
         selectable: false,
-        height: '900px',
+        height: '730px',
         headerToolbar: {start: '', center: '', end: ''},
         buttonText: {today: 'day', dayGridMonth: 'month', 
                      listDay: 'list', listWeek: 'list', listMonth: 'list', 
@@ -151,30 +155,34 @@
     }
     
 </script>
-<Grid>
-    <Calendar bind:this={ec} {plugins} {options} />
-</Grid>
-<Grid>
-    <Row padding>
-        <Column>
-        <div class="container key">
-            {#each colorScale as color}
-            <div class="colorScale" style="background-color: {color}; padding: 12px; color: white">
-                {rankToString(colorScale.indexOf(color)+1)} 
-            </div>
-            {/each}
+
+<div class="header-container">
+    <div class="left-container">
+    </div>
+    <h6>{covertShortStrToText(timeZone)}</h6>
+</div>
+
+<Calendar bind:this={ec} {plugins} {options} />
+
+<Row padding>
+    <Column>
+    <div class="container key">
+        {#each colorScale as color}
+        <div class="colorScale" style="background-color: {color}; padding: 12px; color: white">
+            {rankToString(colorScale.indexOf(color)+1)} 
         </div>
-        </Column>
-        <Column/>
-        <Column>
-            <div class="container">
-                <div class="buttonContainer">
-                <Button kind="danger" size="field" on:click={logout}>Done</Button>              
-                </div>
-            </div>  
-        </Column>
-    </Row>
-</Grid>
+        {/each}
+    </div>
+    </Column>
+    <Column/>
+    <Column>
+        <div class="container">
+            <div class="buttonContainer">
+            <Button kind="danger" size="field" on:click={logout}>Done</Button>              
+            </div>
+        </div>  
+    </Column>
+</Row>
 
 <style>
     .container {
