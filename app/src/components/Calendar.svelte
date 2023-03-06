@@ -6,7 +6,6 @@
     import { selectionState } from './types.ts';
     import { Button, Modal } from "carbon-components-svelte";
     import { Redo } from "carbon-icons-svelte/lib/";
-    import { Grid, Row, Column } from 'carbon-components-svelte';
     import { db } from '../firebase.js'
     import { nanoid } from 'nanoid';
     import { doc, deleteDoc } from 'firebase/firestore';
@@ -14,18 +13,16 @@
     import { onAuthStateChanged } from 'Firebase/auth';
     import { onMount } from 'svelte';
     import { auth } from '../firebase.js';
+    import { availableColor, ifnecessaryColor } from './types';
 
     let open = false;
     let cur_event;
-    let availableColor = '#298073';
-    let ifnecessaryColor = '#9EDA95';
     let hasAdminAccess = false;
 
     onMount(() => {
         onAuthStateChanged(
             auth,
             (user) => {
-                console.log(user.displayName)
                 hasAdminAccess = user.displayName == 'laurenwattendorfadmin' || user.displayName == 'tygeriadmin';
             },
             (error) => {
@@ -58,7 +55,7 @@
                      resourceTimeGridWeek: 'week', timeGridDay: 'day', 
                      timeGridWeek: 'week'},
         allDaySlot: false,
-        selectBackgroundColor: "green"
+        selectBackgroundColor: availableColor
     };
 
     selectionState.subscribe(value => {
@@ -145,7 +142,7 @@
     }
 
     function TEMP_clearAllEvents() {
-        console.log("DATABASE CLEARED!!")
+        console.log("DATABASE CLEARED!")
         options.events = [];
         db.collection("events").get().then(res => {
             res.forEach(element => {
@@ -156,11 +153,12 @@
 
 </script>
 
-<Button on:click={handleClear} kind="secondary" size="field">
-    <div style="display: flex; align-items: center;">
-        <Redo style="margin-right: 0.0rem;" /> Clear
-    </div>
-</Button>
+<div class="header-container">
+    <Button on:click={handleClear} style="padding-right: 16px; margin-right: 16px;" kind="secondary" size="field">
+        <Redo style="margin-right: 0.5rem;"/> Clear
+    </Button>
+    <h4>Please enter your availability:</h4>
+</div>
 <Calendar bind:this={ec} {plugins} {options} />
   
 <Modal
@@ -176,27 +174,27 @@
   >
 </Modal>
 
-<Grid>
-    <Row padding>
-        <Column>
-            <div class="container">
-                <div class="buttonContainer">
-                    <button hidden={!hasAdminAccess} on:click={TEMP_clearAllEvents}>Clear database</button>        
-                </div>                
-                <div class="buttonContainer">
-                <Button size="field" kind="tertiary" on:click={handleSaveEvents}>Save</Button>        
-                </div>
-                <div class="buttonContainer">
-                    <Button size="field" on:click={handleSaveAndView}>Save and View Results</Button>        
-                </div>
-            </div>       
-        </Column>
-   </Row>
-</Grid>
+<div class="footer-container">
+    <div class="buttonContainer">
+        <button hidden={!hasAdminAccess} on:click={TEMP_clearAllEvents}>Clear database</button>        
+    </div>                
+    <div class="buttonContainer">
+    <Button size="field" kind="tertiary" on:click={handleSaveEvents}>Save</Button>        
+    </div>
+    <div class="buttonContainer">
+        <Button size="field" on:click={handleSaveAndView}>Save and View Results</Button>        
+    </div>
+</div>      
+
 <style>
-    .container {
+    .header-container {
+        display: flex;
+        justify-content: start;
+    }
+    .footer-container {
         display: flex;
         justify-content: end;
+        padding-top: 16px;
     }
     .buttonContainer {
         padding-left: 16px;

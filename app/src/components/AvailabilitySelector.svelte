@@ -2,7 +2,6 @@
     import { ContentSwitcher, Switch } from "carbon-components-svelte";
     import { FaceSatisfied, FaceDissatisfied } from "carbon-icons-svelte/lib/";
     import { updateAvailability } from "./types.ts";
-  
     let selectedIndex = 0;
 
 </script>
@@ -27,6 +26,6 @@
     }
     :global(.bx--content-switcher-btn.ifnecessary)::after,
     :global(.bx--content-switcher-btn.ifnecessary.bx--content-switcher--selected) {
-        background-color: #9EDA95 !important
+        background-color: #F1A208 !important
     }
 </style>

@@ -10,7 +10,7 @@
         onAuthStateChanged(
             auth,
             (user) => {
-                displayName = user.displayName;
+                displayName = user ? user.displayName : '';
             },
             (error) => {
                 console.log(error);
@@ -38,7 +38,7 @@
 </Grid>
 
 <style>
-    h4 {
+    :global(h4) {
         align-self: center;
         font-size: 18px;
     }

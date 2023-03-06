@@ -1,18 +1,20 @@
 <script>
     import Calendar from '@event-calendar/core';
     import TimeGrid from '@event-calendar/time-grid';
-    import { onMount } from 'svelte';
     import '@event-calendar/core/index.css';
     import { db } from '../firebase.js';
     import { collection, getDocs } from "firebase/firestore";
     import { nanoid } from 'nanoid';
     import chroma from "chroma-js"
-    import { meetingIntervalState } from './types.ts';
+    import { meetingIntervalState, topTimesState } from './types.ts';
     import { Button, Grid, Row, Column } from "carbon-components-svelte";
     import { goto } from "$app/navigation";
     import { auth } from '../firebase.js';
+    import { availableColor, ifnecessaryColor } from './types.ts';
 
     $: meetingLength = $meetingIntervalState;
+    $: topTimes = $topTimesState;
+    $: numEvents = topTimes == 0 ? 3 : topTimes == 1 ? 5 : 10;
     let colorScale = [];
 
     let ec;
@@ -37,10 +39,15 @@
                      resourceTimeGridWeek: 'week', timeGridDay: 'day', 
                      timeGridWeek: 'week'},
         allDaySlot: false,
-        selectBackgroundColor: "green"
+        selectBackgroundColor: availableColor
     };
 
     meetingIntervalState.subscribe(() => {
+        options.events = [];
+        populateEvents();
+    })
+
+    topTimesState.subscribe(() => {
         options.events = [];
         populateEvents();
     })
@@ -61,20 +68,19 @@
             }
         });
 
-        let [newEvents, maxRank] = findOverlaps(events);
+        let newEvents = findOverlaps(events);
 
-        colorScale = chroma.scale(['#298073','#9ED996']).mode('lch').colors(maxRank);
-        console.log(colorScale);
-
+        colorScale = chroma.scale([availableColor,ifnecessaryColor]).mode('lch').colors(numEvents);
 
         newEvents.forEach(event => {
+            ec.removeEventById(event.startTime);
             ec.addEvent({
-                id: nanoid(),
+                id: event.startTime,
                 title: eventTitle(event),
                 start: event.startTime,
                 end: event.endTime,
                 color: colorScale[event.rank-1]
-            })
+            });
         })
         options.events.push(ec)
     }
@@ -132,7 +138,7 @@
                 rank: rank,
             }
         }
-        return [sortableArray.slice(0, 10), rank];
+        return sortableArray.slice(0, numEvents);
     }
 
     async function logout() {
@@ -141,37 +147,32 @@
     }
 
     function rankToString(i) {
-        if (i == 1) {
-            return '1st';
-        } else if (i == 2) {
-            return '2nd'
-        } else if (i == 3) {
-            return '3rd'
-        } else {
-            return i + "th"
-        }
+        return i == 1 ? '1st' : i == 2 ? '2nd' : i == 3 ? '3rd' : i + "th";
     }
+    
 </script>
 <Grid>
     <Calendar bind:this={ec} {plugins} {options} />
 </Grid>
 <Grid>
     <Row padding>
-    {#each colorScale as color}
-    <Column>
-        <div style="background-color: {color}; padding: 12px; color: white">
-            {rankToString(colorScale.indexOf(color)+1)} 
-        </div>
-    </Column>
-    {/each}
-    <Column/>
-    <Column>
-        <div class="container">
-            <div class="buttonContainer">
-            <Button kind="danger" size="field" on:click={logout}>Done</Button>        
+        <Column>
+        <div class="container key">
+            {#each colorScale as color}
+            <div class="colorScale" style="background-color: {color}; padding: 12px; color: white">
+                {rankToString(colorScale.indexOf(color)+1)} 
             </div>
-        </div>       
-    </Column>
+            {/each}
+        </div>
+        </Column>
+        <Column/>
+        <Column>
+            <div class="container">
+                <div class="buttonContainer">
+                <Button kind="danger" size="field" on:click={logout}>Done</Button>              
+                </div>
+            </div>  
+        </Column>
     </Row>
 </Grid>
 
@@ -179,6 +180,9 @@
     .container {
         display: flex;
         justify-content: end;
+    }
+    .key {
+        justify-content: start;
     }
     .buttonContainer {
         padding-left: 16px;

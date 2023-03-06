@@ -1,4 +1,6 @@
 import { writable } from 'svelte/store';
+export let availableColor = '#298073';
+export let ifnecessaryColor = '#F1A208';
 
 interface SelectionState {
     available: boolean;
@@ -9,7 +11,6 @@ export const selectionState = writable<SelectionState>({available: true, locatio
 
 export function updateAvailability() {
     selectionState.update(n => ({available: !n.available, location: n.location}));
-    console.log("Updated Availability");
 }
 
 export function updateLocation(loc: number) {
@@ -20,4 +21,10 @@ export const meetingIntervalState = writable<number>(0);
 
 export function updateMeetingInterval(newInterval: number) {
     meetingIntervalState.update(() => newInterval);
+}
+
+export const topTimesState = writable<number>(0);
+
+export function updateTopTimes(newNum: number) {
+    topTimesState.update(() => newNum);
 }

@@ -1,22 +1,15 @@
 <script>
 	import Results from '../../components/Results.svelte';
 	import Profile from '../../components/Profile.svelte';
-	import MeetingIntervalSelector from '../../components/MeetingIntervalSelector.svelte';
-    import { Grid, Row, Column } from "carbon-components-svelte";
+	import Menubar from '../../components/Menubar.svelte';
 </script>
 
 <svelte:head>
-	<title>Home</title>
+	<title>schedUlater</title>
 </svelte:head>
 
 <section>
 	<Profile></Profile>
-	<Grid>
-		<Row>
-			<Column>
-				<MeetingIntervalSelector/>
-			</Column>
-		</Row>
-	</Grid>
+	<Menubar isResultsPage={true}></Menubar>
 	<Results></Results>
 </section>
