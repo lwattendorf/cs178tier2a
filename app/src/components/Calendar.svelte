@@ -3,29 +3,46 @@
     import TimeGrid from '@event-calendar/time-grid';
     import Interaction from '@event-calendar/interaction'
     import '@event-calendar/core/index.css';
-	import { get_current_component } from 'svelte/internal';
     import { selectionState } from './types.ts';
     import { Button, Modal } from "carbon-components-svelte";
     import { Redo } from "carbon-icons-svelte/lib/";
-
-
-    let idCount = 0;
+    import { Grid, Row, Column } from 'carbon-components-svelte';
+    import { db } from '../firebase.js'
+    import { nanoid } from 'nanoid';
+    import { doc, deleteDoc } from 'firebase/firestore';
+    import { goto } from "$app/navigation";
+    import { onAuthStateChanged } from 'Firebase/auth';
+    import { onMount } from 'svelte';
+    import { auth } from '../firebase.js';
 
     let open = false;
-    let delete_event = false;
     let cur_event;
+    let availableColor = '#298073';
+    let ifnecessaryColor = '#9EDA95';
+    let hasAdminAccess = false;
+
+    onMount(() => {
+        onAuthStateChanged(
+            auth,
+            (user) => {
+                console.log(user.displayName)
+                hasAdminAccess = user.displayName == 'laurenwattendorfadmin' || user.displayName == 'tygeriadmin';
+            },
+            (error) => {
+                console.log(error);
+            }
+        );
+    });
 
     $: myState = $selectionState;
 
     let ec;
-    // let color = myState.available ? 'green' : 'yellowgreen';
     let plugins = [TimeGrid, Interaction];
     let options = {
         eventDragStart: (info) => {console.log(info.view)},
         eventDragStop: (info) => {console.log(info.view)},
         select: (info) => (handleSelection(info)),
         eventClick: (event) => (handleEventClick(event)),
-        // dateClick: ({date: dateTime}) => {handleDateTimeClick(dateTime)},
         view: 'timeGridWeek',
         slotDuration: '00:15',
         editable: true,
@@ -33,7 +50,7 @@
             // events added here using handleDateTimeClick()
         ],
         selectable: true,
-        height: '600px',
+        height: '730px',
         headerToolbar: {start: '', center: '', end: ''},
         buttonText: {today: 'day', dayGridMonth: 'month', 
                      listDay: 'list', listWeek: 'list', listMonth: 'list', 
@@ -45,46 +62,103 @@
     };
 
     selectionState.subscribe(value => {
-        options.selectBackgroundColor = value.available ? 'green' : 'yellowgreen';
+        options.selectBackgroundColor = value.available ? availableColor : ifnecessaryColor;
     })
-
-    function clear() {
-        options.events = [];
-    }
 
     function handleEventDeletion() {
         if (cur_event != -1) {
             ec.removeEventById(cur_event);
+            deleteDoc(doc(db, "events", cur_event));
         }
+
         cur_event = -1;
         open = false;
     }
 
     const handleSelection = (time) => {
         ec.addEvent({
-            id: idCount,
+            id: nanoid(),
             title: myState.location == 0 ? 'Anywhere': myState.location == 1 ? 'Zoom Only': 'SEC',
             start: time.start,
             end: time.end,
-            color: myState.available ? 'green' : 'yellowgreen',
-            eventBackgroundColor: myState.available ? 'green' : 'yellowgreen'
+            color: myState.available ? availableColor : ifnecessaryColor,
+            eventBackgroundColor: myState.available ? availableColor : ifnecessaryColor
         })
-        idCount += 1
         options.events.push(ec)
-        console.log("Event Added")
     }
+
     const handleEventClick = (info) => {
-        console.log("event click!")
         open = true;
         cur_event = info.event.id;
     }
 
+    function handleSaveEvents() {
+        if (options.events != [] && options.events[0] != undefined) { 
+            let events = options.events[0].getEvents();
+            events.forEach((event) => {
+                let docRef = db.collection("events").doc(event.id);
+                let startTime = convertTimeToIndex(event.start);
+                let endTime = convertTimeToIndex(event.end);
+                let obj = {
+                    available: event.backgroundColor == availableColor, 
+                    location: event.title == 'Anywhere' ? 0 : event.title == 'Zoom Only' ? 1 : 2, 
+                    startTime: startTime, 
+                    endTime: endTime,
+                }
+                docRef.get()
+                    .then((docSnapshot) => {
+                    if (docSnapshot.exists) {
+                        docRef.update(obj)
+                    } else {
+                        docRef.set(obj)
+                    }
+                })
+            }) 
+        }
+    }
+
+    function convertTimeToIndex(time) {
+        let diffInSecs = (time-ec.getView().currentStart) / 1000;
+        let diffInMin = diffInSecs / 60;
+        return diffInMin
+    }
+
+    async function handleSaveAndView() {
+        handleSaveEvents();
+        await goto('/results');
+    }
+
+    function handleClear() {
+        if (options.events != [] && options.events[0] != undefined) { 
+            let events = options.events[0].getEvents();
+            events.forEach((event) => {
+                let docRef = db.collection("events").doc(event.id);
+                docRef.get()
+                    .then((docSnapshot) => {
+                    if (docSnapshot.exists) {
+                        deleteDoc(doc(db, "events", event.id));
+                    }
+                })
+            })
+            options.events = [];
+        }
+    }
+
+    function TEMP_clearAllEvents() {
+        console.log("DATABASE CLEARED!!")
+        options.events = [];
+        db.collection("events").get().then(res => {
+            res.forEach(element => {
+            element.ref.delete();
+            });
+        });
+    }
 
 </script>
 
-<Button on:click={clear} kind="secondary" size="small">
+<Button on:click={handleClear} kind="secondary" size="field">
     <div style="display: flex; align-items: center;">
-        <Redo style="margin-right: 0.0rem;" />Clear
+        <Redo style="margin-right: 0.0rem;" /> Clear
     </div>
 </Button>
 <Calendar bind:this={ec} {plugins} {options} />
@@ -102,3 +176,29 @@
   >
 </Modal>
 
+<Grid>
+    <Row padding>
+        <Column>
+            <div class="container">
+                <div class="buttonContainer">
+                    <button hidden={!hasAdminAccess} on:click={TEMP_clearAllEvents}>Clear database</button>        
+                </div>                
+                <div class="buttonContainer">
+                <Button size="field" kind="tertiary" on:click={handleSaveEvents}>Save</Button>        
+                </div>
+                <div class="buttonContainer">
+                    <Button size="field" on:click={handleSaveAndView}>Save and View Results</Button>        
+                </div>
+            </div>       
+        </Column>
+   </Row>
+</Grid>
+<style>
+    .container {
+        display: flex;
+        justify-content: end;
+    }
+    .buttonContainer {
+        padding-left: 16px;
+    }
+</style>

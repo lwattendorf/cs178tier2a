@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-	<title>Home</title>
+	<title>schedUlater</title>
 </svelte:head>
 
 <section>

@@ -7,7 +7,7 @@
 
 </script>
 
-<ContentSwitcher bind:selectedIndex on:click={updateAvailability}>
+<ContentSwitcher size="xl" bind:selectedIndex on:click={updateAvailability}>
     <Switch class="available">
         <div style="display: flex; align-items: center;">
             <FaceSatisfied style="margin-right: 0.5rem;" />Available
@@ -23,10 +23,10 @@
 <style>
     :global(.bx--content-switcher-btn.available)::after,
     :global(.bx--content-switcher-btn.available.bx--content-switcher--selected) {
-        background-color: green !important
+        background-color: #298073 !important
     }
     :global(.bx--content-switcher-btn.ifnecessary)::after,
     :global(.bx--content-switcher-btn.ifnecessary.bx--content-switcher--selected) {
-        background-color: yellowgreen !important
+        background-color: #9EDA95 !important
     }
 </style>

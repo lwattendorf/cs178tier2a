@@ -1,7 +1,6 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
-import { doc, getFirestore } from "firebase/firestore/lite";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDoRTaQSGshFUizxHstRKhtED_AKsFcSyw",
@@ -18,8 +17,7 @@ let app = firebase.initializeApp(firebaseConfig)
 const auth = firebase.auth();
 export const googleProvider = new firebase.auth.GoogleAuthProvider();
 
-let db = getFirestore(app);
-export const userDoc = (userId) => doc(db, "users", userId)
+export const db = app.firestore();
 export {
     auth,
 }

@@ -1,15 +1,15 @@
 <script>
-    import { ContentSwitcher, Switch, Grid, Row, Column, ComboBox } from "carbon-components-svelte";
-    import { FaceSatisfiedFilled, FaceNeutral, EarthEuropeAfrica, Building, Video } from "carbon-icons-svelte/lib/";
+    import { ContentSwitcher, Switch } from "carbon-components-svelte";
+    import { EarthEuropeAfrica, Building, Video } from "carbon-icons-svelte/lib/";
     import { updateLocation } from "./types.ts";
   
     let selectedIndex = 0;
 </script>
 
-<ContentSwitcher bind:selectedIndex on:click={() => updateLocation(selectedIndex)}>
+<ContentSwitcher size="xl" bind:selectedIndex on:click={() => updateLocation(selectedIndex)}>
     <Switch class="any">
         <div style="display: flex; align-items: center;">
-            <EarthEuropeAfrica style="margin-right: 0.5rem;" />Any location
+            <EarthEuropeAfrica expressivestyle="margin-right: 0.5rem;" />Any location
         </div>
     </Switch>
     <Switch class="zoom">

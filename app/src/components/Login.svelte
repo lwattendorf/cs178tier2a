@@ -8,8 +8,6 @@
     let invalidDisplayName = false;
 
     async function signInAnonymously() {
-
-        console.log(displayName);
         if (displayName === "") {
             invalidDisplayName = true;
         }
@@ -23,6 +21,7 @@
                 // Update the user's profile with the provided name
                 await user.updateProfile({
                     displayName: displayName,
+                    timeZone: selectedTimeZone,
                 });
 
                 await goto('/main');
@@ -37,7 +36,7 @@
 
 <Grid>
     <Row padding style="padding-top: 20%" >
-        <Column sm={{ span: 2, offset: 1 }}><h1>Welcome</h1></Column>
+        <Column sm={{ span: 2, offset: 1 }}><h1>schedUlater</h1></Column>
     </Row>
     <Row padding>
         <Column sm={{ span: 2, offset: 1 }}><h4>Sign In</h4></Column>
@@ -122,5 +121,27 @@
     }
     :global(.bx--select) {
         margin-top: -0.5rem;
+    }
+    :global(.bx--btn--primary), :global(.bx--btn--tertiary:hover) {
+        background-color: #298073;
+    }
+    :global(.bx--btn--tertiary) {
+        color: #298073;
+        border-color: #298073;
+    }
+    :global(.bx--btn--danger) {
+        background-color: #040403;
+    }
+    :global(.bx--btn--danger:hover) {
+        background-color: #e5e5e5;
+        color: #040403;
+        border-color: #040403;
+    }
+    :global(.bx--btn--primary:hover){
+        background-color: #1E5C53;
+    }
+    :global(h1) {
+        font-family: "Courier New", monospace;
+        color: #1E5C53;
     }
 </style>

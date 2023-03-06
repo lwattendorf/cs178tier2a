@@ -1,5 +1,5 @@
 <script>
-    import { Loading, Button, Grid, Row, Column } from "carbon-components-svelte";
+    import { Button, Grid, Row, Column } from "carbon-components-svelte";
     import { onAuthStateChanged } from 'Firebase/auth';
     import { onMount } from 'svelte';
     import { goto } from "$app/navigation";
@@ -30,7 +30,7 @@
             <div class="container">
                 {#if displayName!=null}<h4>Welcome, {displayName}</h4>{/if}
                 <div class="buttonContainer">
-                <Button size="small" kind="tertiary" on:click={logout}>Logout</Button>        
+                <Button size="field" kind="tertiary" on:click={logout}>Logout</Button>        
                 </div>
             </div>       
         </Column>
@@ -38,6 +38,10 @@
 </Grid>
 
 <style>
+    h4 {
+        align-self: center;
+        font-size: 18px;
+    }
     .container {
         display: flex;
         justify-content: end;
