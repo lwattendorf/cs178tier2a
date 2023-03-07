@@ -96,6 +96,21 @@
         open = false;
     }
 
+    function handleEventDuplication () {
+        console.log(cur_event);
+        let new_event = ec.getEventById(cur_event)
+        ec.addEvent({
+            id: nanoid(),
+            title: new_event.title,
+            start: new_event.start,
+            end: new_event.end,
+            color: myState.available ? availableColor : ifnecessaryColor,
+            eventBackgroundColor: myState.available ? availableColor : ifnecessaryColor
+        })
+        cur_event = -1;
+        open = false
+    }
+
     const handleSelection = (time) => {
         ec.addEvent({
             id: nanoid(),
@@ -109,8 +124,8 @@
     }
 
     const handleEventClick = (info) => {
-        open = true;
         cur_event = info.event.id;
+        open = true;
     }
 
     function handleSaveEvents() {
@@ -215,9 +230,13 @@
     bind:open
     modalHeading="Delete event"
     primaryButtonText="Delete"
-    secondaryButtonText="Cancel"
+    secondaryButtons={[{ text: "Cancel" }, { text: "Duplicate" }]}
     on:click:button--secondary={() => (open = false)}
     on:click:button--primary={() => (handleEventDeletion())}
+    on:click:button--secondary={({ detail }) => {
+        if (detail.text === "Cancel") open = false;
+        if (detail.text === "Duplicate") handleEventDuplication();
+    }}
     on:open
     on:close
     on:submit
