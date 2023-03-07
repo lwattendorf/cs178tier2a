@@ -16,15 +16,21 @@
     import { availableColor, ifnecessaryColor } from './types';
     import { timeZoneState, updateTimeZone, covertShortStrToText, covertShortToDiff } from "./types.ts";
 
+    // Init global variables for event selection, deletion, duplication
     let open = false;
     let cur_event;
+    // Global variables for log in and user name
     let hasAdminAccess = false;
     let displayName;
+
+    // Subscription to Store for preferences and timezone
+    // CONCEPT: Menubar
     $: myState = $selectionState;
     $: timeZone = $timeZoneState;
 
     let startTime = 0;
 
+    // Timer
     function startTimer() {
         startTime = Date.now();
     }
@@ -46,6 +52,7 @@
         }
     }
 
+    // CONCEPT: Profile (Auth / Login)
     onMount(() => {
         onAuthStateChanged( auth, (user) => {
             displayName = user.displayName;
@@ -56,6 +63,7 @@
         startTimer();
     });
 
+    // CONCEPT: Calendar, Timeslots, Events
     let ec;
     let plugins = [TimeGrid, Interaction];
     let options = {
@@ -86,18 +94,18 @@
         options.selectBackgroundColor = value.available ? availableColor : ifnecessaryColor;
     })
 
+    // Handle modal induced deletion
     function handleEventDeletion() {
         if (cur_event != -1) {
             ec.removeEventById(cur_event);
             deleteDoc(doc(db, "events", cur_event));
         }
-
         cur_event = -1;
         open = false;
     }
 
+    // Handle modal induced duplication
     function handleEventDuplication () {
-        console.log(cur_event);
         let new_event = ec.getEventById(cur_event)
         ec.addEvent({
             id: nanoid(),
@@ -111,6 +119,8 @@
         open = false
     }
 
+    // Handle creation of new event across timeslots
+    // CONCEPT: Timeslots, Events
     const handleSelection = (time) => {
         ec.addEvent({
             id: nanoid(),
@@ -123,11 +133,13 @@
         options.events.push(ec)
     }
 
+    // Open modal from event click
     const handleEventClick = (info) => {
         cur_event = info.event.id;
         open = true;
     }
 
+    // Save events to DB
     function handleSaveEvents() {
         if (options.events != [] && options.events[0] != undefined) { 
             let events = options.events[0].getEvents();
@@ -157,6 +169,7 @@
         }
     }
 
+    // CONCEPT: Profile (Auth / Login), Event
     async function handleSaveAndExit() {
         handleSaveEvents();
         updateTimeZone('-05:00'); // always display final times in EST
@@ -173,6 +186,7 @@
         return diffInMin
     }
 
+    // Render results page upon Save and View
     async function handleSaveAndView() {
         handleSaveEvents();
         updateTimeZone('-05:00'); // always display final times in EST
@@ -182,6 +196,7 @@
         await goto('/results');
     }
 
+    // Clear calendar in DB
     function handleClear() {
         if (options.events != [] && options.events[0] != undefined) { 
             let events = options.events[0].getEvents();
@@ -198,6 +213,7 @@
         }
     }
 
+    // Reset DB
     function clearAllEvents() {
         console.log("FIRESTORE DATABASE CLEARED!")
         options.events = [];
