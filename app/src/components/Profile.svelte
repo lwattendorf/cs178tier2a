@@ -1,6 +1,6 @@
 <script>
     import { Button, Grid, Row, Column } from "carbon-components-svelte";
-    import { onAuthStateChanged } from 'Firebase/auth';
+    import { onAuthStateChanged } from 'firebase/auth';
     import { onMount } from 'svelte';
     import { goto } from "$app/navigation";
     import { auth } from '../firebase.js';
