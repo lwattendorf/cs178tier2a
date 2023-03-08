@@ -6,6 +6,9 @@
 	import TopTimesSelector from "./TopTimesSelector.svelte";
     
     export let isResultsPage = false;
+
+    // CONCEPT: Menubar
+    // Reuses layout for both main and results pages, just changes the selectors displaeyed
 </script>
   
 <Grid>

@@ -3,21 +3,24 @@
     import { Button, Grid, Row, Column, TextInput, Select, SelectItem } from "carbon-components-svelte";
     import { goto } from "$app/navigation";
     import { updateTimeZone } from './types.ts';
-
+    
     let displayName;
     let selectedTimeZone = "-05:00";
     let invalidDisplayName = false;
 
+    // CONCEPT: profile (auth/login)
+    // Sign in function to connect to firebase auth
     async function signInAnonymously() {
-
         if (displayName === "") {
             invalidDisplayName = true;
         }
         else {
             console.log("Signing in...");
             try {
+                // Update the global store with current user's timezone
                 updateTimeZone(selectedTimeZone);
 
+                // Sign in via firebase auth
                 const userCredential = await auth.signInAnonymously();
                 const user = userCredential.user;
 

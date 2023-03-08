@@ -16,10 +16,8 @@
     import { auth } from '../firebase.js';
     import { onMount } from 'svelte';
 
-    $: meetingLength = $meetingIntervalState;
-    $: timeZone = $timeZoneState;
-    $: topTimes = $topTimesState;
-    $: numEvents = topTimes == 0 ? 3 : topTimes == 1 ? 5 : 10;
+    // CONCEPT: Calendar
+    // Set up results calendar as non-interactive
     let colorScale = [];
     let objUrl;
     let ec;
@@ -47,9 +45,17 @@
         selectBackgroundColor: availableColor
     };
 
+    // Generate URL for downloading timing data 
+    // Note: Timing download button is disabled for publicly hosted app
     onMount(() => {
         createExportCSVUrl();
     });
+
+    // Subscribe to global stores for selected menu bar state
+    $: meetingLength = $meetingIntervalState;
+    $: timeZone = $timeZoneState;
+    $: topTimes = $topTimesState;
+    $: numEvents = topTimes == 0 ? 3 : topTimes == 1 ? 5 : 10;
 
     meetingIntervalState.subscribe(() => {
         options.events = [];
@@ -61,6 +67,8 @@
         populateEvents();
     })
 
+    // Gets inputted availability from firestore and generates the top n (topTimes)
+    // events to be displayed on the calendar
     async function populateEvents() {
         let events = [];
 
@@ -76,12 +84,10 @@
                 })   
             }
         });
-        console.log(events);
 
         let newEvents = findOverlaps(events);
 
         colorScale = chroma.scale([availableColor,lastRankColor]).mode('lch').colors(numEvents);
-
         newEvents.forEach(event => {
             ec.removeEventById(event.startTime);
             ec.addEvent({
@@ -95,6 +101,7 @@
         options.events.push(ec)
     }
 
+    // helper function for naming individual events
     function eventTitle(event) {
         let rankString = rankToString(event.rank) + " choice";
         let numAvailableString = event.numAvailable + " available";
@@ -102,15 +109,28 @@
         return rankString + "\n" + numAvailableString + "\n" + locationString;
     }
 
+    // helper function for displaying rank of events
+    function rankToString(i) {
+        return i == 1 ? '1st' : i == 2 ? '2nd' : i == 3 ? '3rd' : i + "th";
+    }
+
+    // helper function for converting "index" (how start and end times are encoded in the firestore)
+    // to UTC time to be displayed on calendar
     function convertIndexToTime(index) {
         return new Date(index * 15 * 60 * 1000 + ec.getView().currentStart.getTime());
     }
 
+
+    // helper function to calculate the events with the maximum number of people available
     function findOverlaps(v) {
+        // indexing convention used to encode time blocks of the week into indices 0->672
+        // (7 days per week * 24 hours / day * 4 fifteen minute blocks / hr = 672)
         var timeArray = new Array(672).fill(0);
         var zoomArray = new Array(672).fill(false);
         var interval = meetingLength == 0 ? 60 : meetingLength == 1 ? 30 : 15;
         var intervalIndex = interval / 15;
+
+        // increments timeArray[i] if someone is available for time i
         v.forEach(event => {
             let startTimeIndex = event.start == 0 ? 0 : event.start/15;
             let endTimeIndex =  event.end/15;
@@ -135,6 +155,8 @@
             }
         }
 
+        // add rankings to top events, i.e. if there are several events with 
+        // n people available, all will have the same rank ("xth choice")
         sortableArray.sort((a,b) => b.numAvailable - a.numAvailable);
         let maxAvailable = sortableArray[0].numAvailable;
         let rank = 1;
@@ -148,18 +170,13 @@
                 rank: rank,
             }
         }
+
+        // returns only the top numEvents to be displayed on the calendar
         return sortableArray.slice(0, numEvents);
     }
 
-    async function logout() {
-        auth.signOut();
-        await goto('/');
-    }
-
-    function rankToString(i) {
-        return i == 1 ? '1st' : i == 2 ? '2nd' : i == 3 ? '3rd' : i + "th";
-    }
-
+    // Generate URL for downloading timing data 
+    // Note: Timing download button is disabled for publicly hosted app
     async function createExportCSVUrl() {
         const querySnapshot = await getDocs(collection(db, "timer"));
         let timerArray = [];
@@ -180,6 +197,12 @@
         objUrl = URL.createObjectURL(blob)
     }
     
+    // CONCEPT: Profile (auth/login)
+    // logout and return to login screen when user clicks "done"
+    async function logout() {
+        auth.signOut();
+        await goto('/');
+    }
 </script>
 
 <div class="header-container">
@@ -203,9 +226,10 @@
     <Column/>
     <Column>
         <div class="container">
+            <!-- FOR IN-CLASS COMPETITION ONLY:
             <div class="buttonContainer">
                 <Button size="field" kind="tertiary" href={objUrl}>Export Timing Data</Button>            
-            </div>
+            </div> -->
             <div class="buttonContainer">
             <Button kind="danger" size="field" on:click={logout}>Done</Button>              
             </div>

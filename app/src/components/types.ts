@@ -2,12 +2,17 @@ import { writable } from 'svelte/store';
 export let availableColor = '#298073';
 export let ifnecessaryColor = '#619d4b';
 export let lastRankColor = '#F1A208';
+let timeZones;
+
+// Svelte store for maintaining global store variables
 
 interface SelectionState {
     available: boolean;
     location: number;
 }
 
+// Currently selected availability, 0: "available" or 1: "if necessary"
+// AND currently selected location, 0: "Any location", 1: "Zoom only", 2: "SEC only"
 export const selectionState = writable<SelectionState>({available: true, location: 0});
 
 export function updateAvailability() {
@@ -22,18 +27,21 @@ export function updateLocation(loc: number) {
     selectionState.update(n => ({available: n.available, location: loc}));
 }
 
+// Currently selected meeting length, 0: 1 hour, 1: 30 minutes, 2: 15 minutes
 export const meetingIntervalState = writable<number>(0);
 
 export function updateMeetingInterval(newInterval: number) {
     meetingIntervalState.update(() => newInterval);
 }
 
+// Currently selected number of choices to display, 0: top 3, 1: top 5, 2: top 10
 export const topTimesState = writable<number>(0);
 
 export function updateTopTimes(newNum: number) {
     topTimesState.update(() => newNum);
 }
 
+// Currently user's timezone, stored as shortStr (see timeZones array below)
 export const timeZoneState = writable<string>('-05:00');
 
 export function updateTimeZone(timeZone: string) {
@@ -48,7 +56,7 @@ export function covertShortToDiff(timeZone) {
     return timeZones.find(o => o.shortStr === timeZone).diff;
 }
 
-export let timeZones = [
+timeZones = [
     {shortStr: "-12:00", text: "Eniwetok, Kwajalein", diff: -12},
     {shortStr: "-11:00", text: "Midway Island, Samoa", diff: -11},
     {shortStr: "-10:00", text: "Hawaii", diff: -10},

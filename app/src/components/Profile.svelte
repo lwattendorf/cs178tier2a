@@ -5,8 +5,11 @@
     import { goto } from "$app/navigation";
     import { auth } from '../firebase.js';
     import { setAvailability } from './types.ts';
+	import { updateLocation } from "./types.ts";
     let displayName = null;
 
+    // CONCEPT: Profile (auth/login)
+    // Get user from firebase on login
     onMount(() => {
         onAuthStateChanged(
             auth,
@@ -20,7 +23,8 @@
     });
 
     async function logout() {
-        setAvailability(true); // reset availability store to true
+        setAvailability(true); // reset availability store to true for next user
+        updateLocation(0); // reset location store to 'anywhere' for next user
         auth.signOut();
         await goto('/');
     }
