@@ -10,7 +10,7 @@
     import { nanoid } from 'nanoid';
     import { doc, deleteDoc } from 'firebase/firestore';
     import { goto } from "$app/navigation";
-    import { onAuthStateChanged } from 'Firebase/auth';
+    import { onAuthStateChanged } from 'firebase/auth';
     import { onMount } from 'svelte';
     import { auth } from '../firebase.js';
     import { availableColor, ifnecessaryColor } from './types';
